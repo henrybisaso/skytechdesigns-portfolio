@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - Sky Tech Designs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .invoice-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+
+        .brand-logo {
+            width: 68px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .company-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .company-details h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .company-details p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-title h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .invoice-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .meta-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .meta-value {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .meta-value input, .meta-value textarea {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .bill-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .bill-to h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .bill-to p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.8;
+            margin-bottom: 5px;
+        }
+
+        .bill-to input, .bill-to textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .items-section {
+            margin-bottom: 30px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .items-table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        .items-table th {
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .items-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .items-table input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .add-item-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .add-item-btn:hover {
+            background: #764ba2;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        .totals-section {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .payment-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .payment-info h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .payment-method {
+            margin-bottom: 15px;
+        }
+
+        .payment-method h4 {
+            font-size: 12px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .payment-method p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .totals-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+
+        .total-row.grand-total {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .total-label {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .total-row.grand-total .total-label {
+            color: white;
+        }
+
+        .total-value {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .total-row.grand-total .total-value {
+            color: white;
+        }
+
+        .total-value input {
+            background: transparent;
+            border: none;
+            color: #667eea;
+            font-weight: 700;
+            text-align: right;
+            width: auto;
+        }
+
+        .total-row.grand-total .total-value input {
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-print {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-pdf {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-send {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-send:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .top-navigation {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .nav-links a.active {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                padding: 0;
+            }
+
+            .top-navigation {
+                display: none;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            input, textarea {
+                background: transparent !important;
+                border: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoice-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .invoice-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .bill-section {
+                grid-template-columns: 1fr;
+            }
+
+            .totals-section {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-wrap: wrap;
+            }
+
+            .action-btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-navigation">
+        <a href="index.html" class="nav-brand">← Back to Sky Tech Designs</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="invoice.html" class="active">Invoice</a></li>
+        </ul>
+    </nav>
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="company-info">
+                <img src="images/logo.png" alt="Sky Tech Designs" class="brand-logo">
+                <div class="company-details">
+                    <h1>Sky Tech Designs</h1>
+                    <p>Professional Web & Graphic Design<br>
+                    📧 skytechdesigns14@gmail.com<br>
+                    📱 +256 740199968 / +266 770162729 / +256 780808970</p>
+                </div>
+            </div>
+            <div class="invoice-title">
+                <h2>INVOICE</h2>
+            </div>
+        </div>
+
+        <!-- Invoice Meta Info -->
+        <div class="invoice-meta">
+            <div class="meta-section">
+                <div class="meta-item">
+                    <span class="meta-label">Invoice Number</span>
+                    <span class="meta-value"><input type="text" id="invoiceNum" value="INV-2026-001" style="width: 120px;"></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Invoice Date</span>
+                    <span class="meta-value"><input type="date" id="invoiceDate" style="width: 120px;"></span>
+                </div>
+            </div>
+            <div class="meta-section">
+                <div class="meta-item">
+                    <span class="meta-label">Due Date</span>
+                    <span class="meta-value"><input type="date" id="dueDate" style="width: 120px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bill To Section -->
+        <div class="bill-section">
+            <div class="bill-to">
+                <h3>Bill To:</h3>
+                <input type="text" placeholder="Client Name" id="clientName" value="Client Name">
+                <input type="text" placeholder="Company" id="clientCompany" value="Company Name">
+                <textarea placeholder="Address" id="clientAddress" rows="3">123 Main Street
+City, State 12345
+Country</textarea>
+                <input type="email" placeholder="Email" id="clientEmail" value="client@example.com">
+                <input type="tel" placeholder="Phone" id="clientPhone" value="+1 (555) 987-6543">
+            </div>
+            <div class="bill-to">
+                <h3>Ship To:</h3>
+                <input type="text" placeholder="Recipient Name" id="shipName" value="Recipient Name">
+                <input type="text" placeholder="Company" id="shipCompany" value="Company Name">
+                <textarea placeholder="Address" id="shipAddress" rows="3">456 Oak Avenue
+City, State 54321
+Country</textarea>
+            </div>
+        </div>
+
+        <!-- Items Section -->
+        <div class="items-section">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th style="width: 100px;">Quantity</th>
+                        <th style="width: 120px;">Unit Price</th>
+                        <th style="width: 120px;">Amount</th>
+                        <th style="width: 80px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    <tr class="item-row">
+                        <td><input type="text" class="description" value="Web Design Services" placeholder="Service Description"></td>
+                        <td><input type="number" class="quantity" value="1" min="1" onchange="calculateRow(this)"></td>
+                        <td><input type="number" class="unitPrice" value="500" min="0" onchange="calculateRow(this)"></td>
+                        <td><input type="number" class="amount" value="500" readonly></td>
+                        <td><button class="remove-btn" onclick="removeItem(this)">Remove</button></td>
+                    </tr>
+                    <tr class="item-row">
+                        <td><input type="text" class="description" value="Logo Design" placeholder="Service Description"></td>
+                        <td><input type="number" class="quantity" value="1" min="1" onchange="calculateRow(this)"></td>
+                        <td><input type="number" class="unitPrice" value="300" min="0" onchange="calculateRow(this)"></td>
+                        <td><input type="number" class="amount" value="300" readonly></td>
+                        <td><button class="remove-btn" onclick="removeItem(this)">Remove</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="add-item-btn" onclick="addItem()">+ Add Item</button>
+        </div>
+
+        <!-- Totals and Payment -->
+        <div class="totals-section">
+            <div class="payment-info">
+                <h3>Payment Information</h3>
+                <div class="payment-method">
+                    <h4>💳 Mobile Money</h4>
+                    <p><strong>MTN Mobile Money:</strong><br>+1 (555) 111-2222<br><br>
+                    <strong>Airtel Money:</strong><br>+1 (555) 333-4444</p>
+                </div>
+                <div class="payment-method">
+                    <h4>🏦 Bank Transfer</h4>
+                    <p><strong>Bank Name:</strong> First National Bank<br>
+                    <strong>Account Name:</strong> Sky Tech Designs LLC<br>
+                    <strong>Account Number:</strong> 1234567890<br>
+                    <strong>Routing Number:</strong> 987654321</p>
+                </div>
+            </div>
+
+            <div class="totals-box">
+                <div class="total-row">
+                    <span class="total-label">Subtotal</span>
+                    <span class="total-value">$<input type="number" id="subtotal" value="0" readonly></span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Discount (%)</span>
+                    <span class="total-value"><input type="number" id="discountPercent" value="0" min="0" max="100" onchange="calculateTotals()" style="width: 60px;">%</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Discount Amount</span>
+                    <span class="total-value">-$<input type="number" id="discountAmount" value="0" readonly></span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Tax (%)</span>
+                    <span class="total-value"><input type="number" id="taxPercent" value="10" min="0" max="100" onchange="calculateTotals()" style="width: 60px;">%</span>
+                </div>
+                <div class="total-row">
+                    <span class="total-label">Tax Amount</span>
+                    <span class="total-value">$<input type="number" id="taxAmount" value="0" readonly></span>
+                </div>
+                <div class="total-row grand-total">
+                    <span class="total-label">Grand Total</span>
+                    <span class="total-value">$<input type="number" id="grandTotal" value="0" readonly></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions">
+            <button class="action-btn btn-print" onclick="printInvoice()">🖨️ Print</button>
+            <button class="action-btn btn-pdf" onclick="savePDF()">📄 Save as PDF</button>
+            <button class="action-btn btn-send" onclick="sendInvoice()">✉️ Send Invoice</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize dates
+        document.getElementById('invoiceDate').valueAsDate = new Date();
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        document.getElementById('dueDate').valueAsDate = dueDate;
+
+        function addItem() {
+            const tbody = document.getElementById('itemsBody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'item-row';
+            newRow.innerHTML = `
+                <td><input type="text" class="description" placeholder="Service Description"></td>
+                <td><input type="number" class="quantity" value="1" min="1" onchange="calculateRow(this)"></td>
+                <td><input type="number" class="unitPrice" value="0" min="0" onchange="calculateRow(this)"></td>
+                <td><input type="number" class="amount" value="0" readonly></td>
+                <td><button class="remove-btn" onclick="removeItem(this)">Remove</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        function removeItem(btn) {
+            btn.closest('tr').remove();
+            calculateTotals();
+        }
+
+        function calculateRow(input) {
+            const row = input.closest('tr');
+            const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+            const unitPrice = parseFloat(row.querySelector('.unitPrice').value) || 0;
+            const amount = quantity * unitPrice;
+            row.querySelector('.amount').value = amount.toFixed(2);
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            let subtotal = 0;
+            document.querySelectorAll('.item-row').forEach(row => {
+                const amount = parseFloat(row.querySelector('.amount').value) || 0;
+                subtotal += amount;
+            });
+
+            const discountPercent = parseFloat(document.getElementById('discountPercent').value) || 0;
+            const discountAmount = (subtotal * discountPercent) / 100;
+            const subtotalAfterDiscount = subtotal - discountAmount;
+
+            const taxPercent = parseFloat(document.getElementById('taxPercent').value) || 0;
+            const taxAmount = (subtotalAfterDiscount * taxPercent) / 100;
+
+            const grandTotal = subtotalAfterDiscount + taxAmount;
+
+            document.getElementById('subtotal').value = subtotal.toFixed(2);
+            document.getElementById('discountAmount').value = discountAmount.toFixed(2);
+            document.getElementById('taxAmount').value = taxAmount.toFixed(2);
+            document.getElementById('grandTotal').value = grandTotal.toFixed(2);
+        }
+
+        function printInvoice() {
+            window.print();
+        }
+
+        function savePDF() {
+            alert('PDF download functionality would require a backend service. You can use your browser\'s print dialog (Ctrl+P) and save as PDF.');
+        }
+
+        function sendInvoice() {
+            const email = document.getElementById('clientEmail').value;
+            const subject = `Invoice ${document.getElementById('invoiceNum').value}`;
+            window.location.href = `mailto:${email}?subject=${subject}`;
+        }
+
+        // Initial calculation
+        calculateTotals();
+    </script>
+</body>
+</html>

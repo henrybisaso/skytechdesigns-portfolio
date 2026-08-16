@@ -101,7 +101,8 @@
             <nav class="main-nav">
                 <a href="#home">Home</a>
                 <a href="#services">Services</a>
-                <a href="#portfolio">Portfolio</a>
+                <a href="portfolio.html">Portfolio</a>
+                <a href="invoice.html">Invoice</a>
                 <a href="#about">About</a>
                 <a href="#contact">Contact</a>
             </nav>
@@ -557,14 +558,15 @@
         // Smooth Navigation
         document.querySelectorAll('.main-nav a').forEach(link => {
             link.addEventListener('click', event => {
-                event.preventDefault();
                 const href = link.getAttribute('href');
                 if (href && href.startsWith('#')) {
+                    event.preventDefault();
                     const element = document.querySelector(href);
                     if (element) {
                         element.scrollIntoView({ behavior: 'smooth' });
                     }
                 }
+                // Allow external page navigation (portfolio.html, invoice.html, etc.)
             });
         });
 
