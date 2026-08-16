@@ -48,6 +48,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <!-- Minimal toast styles for non-blocking feedback -->
+    <style>
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .28s ease, transform .28s ease;
+      z-index: 9999;
+      font-family: inherit;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    </style>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -413,6 +438,9 @@
 
     <div class="cursor-glow"></div>
 
+    <!-- Non-blocking toast element -->
+    <div id="toast" class="toast" aria-live="polite"></div>
+
     <script>
         // Loading Screen
         window.addEventListener('load', () => {
@@ -434,7 +462,7 @@
 
         function applyTheme(theme) {
             document.body.classList.toggle('dark', theme === 'dark');
-            btn.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+            if (btn) btn.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
         }
 
         if (savedTheme) {
@@ -443,12 +471,14 @@
             applyTheme('dark');
         }
 
-        btn.addEventListener('click', () => {
-            const isDark = document.body.classList.toggle('dark');
-            const theme = isDark ? 'dark' : 'light';
-            localStorage.setItem('theme', theme);
-            applyTheme(theme);
-        });
+        if (btn) {
+            btn.addEventListener('click', () => {
+                const isDark = document.body.classList.toggle('dark');
+                const theme = isDark ? 'dark' : 'light';
+                localStorage.setItem('theme', theme);
+                applyTheme(theme);
+            });
+        }
 
         // Typing Animation
         const words = ['Graphic Designer', 'Web Developer', 'UI/UX Designer', 'Creative Thinker'];
@@ -458,6 +488,7 @@
         let deleting = false;
 
         function typeEffect() {
+            if (!typing) return;
             const currentWord = words[wordIndex];
             if (!deleting) {
                 typing.textContent = currentWord.slice(0, charIndex + 1);
@@ -496,34 +527,39 @@
         // Cursor Glow Effect
         const glow = document.querySelector('.cursor-glow');
         document.addEventListener('mousemove', e => {
+            if (!glow) return;
             glow.style.left = `${e.clientX}px`;
             glow.style.top = `${e.clientY}px`;
             glow.style.opacity = '1';
         });
         document.addEventListener('mouseleave', () => {
-            glow.style.opacity = '0';
+            if (glow) glow.style.opacity = '0';
         });
 
         // Back to Top Button
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
+            if (backToTop) {
+                if (window.scrollY > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
             }
         });
 
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        if (backToTop) {
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
 
         // Smooth Navigation
         document.querySelectorAll('.main-nav a').forEach(link => {
             link.addEventListener('click', event => {
                 event.preventDefault();
                 const href = link.getAttribute('href');
-                if (href.startsWith('#')) {
+                if (href && href.startsWith('#')) {
                     const element = document.querySelector(href);
                     if (element) {
                         element.scrollIntoView({ behavior: 'smooth' });
@@ -532,37 +568,58 @@
             });
         });
 
+        // Toast helper (non-blocking)
+        function showToast(msg, duration = 4000) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            if (showToast._timeout) clearTimeout(showToast._timeout);
+            showToast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
         // Quote Form Handler
         function scrollToForm() {
-            document.getElementById('quote-form').scrollIntoView({ behavior: 'smooth' });
+            const q = document.getElementById('quote-form');
+            if (q) q.scrollIntoView({ behavior: 'smooth' });
         }
 
         const quoteForm = document.getElementById('quoteForm');
         if (quoteForm) {
             quoteForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                // Get form data
+
+                // Get form data with safe fallbacks
                 const formData = new FormData(this);
                 const data = {
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    service: formData.get('service'),
-                    message: formData.get('message')
+                    name: formData.get('name') || '',
+                    email: formData.get('email') || '',
+                    phone: formData.get('phone') || '',
+                    service: formData.get('service') || '',
+                    message: formData.get('message') || ''
                 };
 
                 // Prepare email message
-                const subject = encodeURIComponent(`Quote Request from ${data.name}`);
-                const bodyText = `Hello Sky Tech Designs,\n\nYou have a new quote request:\n\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nService: ${data.service}\n\nMessage:\n${data.message}\n\n--\nSent from skytechdesigns-portfolio website.`;
+                const subject = encodeURIComponent(`Quote Request from ${data.name || 'Unknown'}`);
+                const bodyText =
+                    `Hello Sky Tech Designs,\n\n` +
+                    `You have a new quote request:\n\n` +
+                    `Name: ${data.name}\n` +
+                    `Email: ${data.email}\n` +
+                    `Phone: ${data.phone}\n` +
+                    `Service: ${data.service}\n\n` +
+                    `Message:\n${data.message}\n\n` +
+                    `--\nSent from skytechdesigns-portfolio website.`;
                 const body = encodeURIComponent(bodyText);
-                
+
                 // Open the user's email app with the quote request details
                 const emailUrl = `mailto:skytechdesigns14@gmail.com?subject=${subject}&body=${body}`;
                 window.location.href = emailUrl;
 
-                // Show success message
-                alert('Thank you! Your quote request has been prepared in your email app for skytechdesigns14@gmail.com. Please send it to complete your request.');
+                // Non-blocking UX feedback (toast)
+                showToast('Quote prepared — your email app should open. Please send to complete the request.');
                 this.reset();
             });
         }
